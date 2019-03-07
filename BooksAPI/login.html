@@ -45,6 +45,7 @@
     </div>
     <script src="Scripts/jquery-3.3.1.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
     <script>
         $(document).ready(() => {
             $("#btnLogin").on('click', () => {
@@ -58,7 +59,13 @@
                         grant_type: 'password'
                     },
                     success: function (response) {
-                        sessionStorage.setItem('token', response.access_token);
+                        //var date = new Date;
+                        //date.setDate(date.getDate() + 1);
+
+                        //document.cookie = "token=" + response.access_token + ";path=/;" + "expires=" + date.toUTCString();
+                        $.cookie("token", response.access_token, { expires : 1 });
+
+                        //localStorage.setItem('token', response.access_token);
                         window.location.href = "data.html";
                     },
                     error: function (jqXHR) {

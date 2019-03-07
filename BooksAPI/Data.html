@@ -1,102 +1,107 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8" />
     <title></title>
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/Site.css" rel="stylesheet" />
-</head>
-<body>
+  </head>
+  <body>
     <div class="col-md-10 col-md-offset-1">
-        <div class="well">
-            <input type="button" name="button" value="Load Books" id="btnLoadBooks" class="btn btn-success" />
-        </div>
+      <div class="well">
+          <input type="button" name="button" value="Load Books" id="btnLoadBooks" class="btn btn-success" />
+          <input type="button" name="button" value="Log out" id="btnLogOff" class="btn btn-success pull-right" />
+      </div>
 
-        <div class="well hidden" id="divData">
-            <table class="table table-bordered" id="tbData">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Title</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody id="tblBody">
-
-                </tbody>
-            </table>
+      <div class="well hidden" id="divData">
+        <table class="table table-bordered" id="tbData">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Title</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody id="tblBody"></tbody>
+        </table>
+      </div>
+      <div class="modal fade" tabindex="-1" id="errorModal" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal=sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+              <h4>Session Expired</h4>
+            </div>
+            <div class="modal-body">
+              <h2>Close this to login again</h2>
+            </div>
+            <div class="modal-footer">
+              <button type="button" data-dismiss="modal" class="btn btn-success">Close</button>
+            </div>
+          </div>
         </div>
-        <div class="modal fade" tabindex="-1" id="errorModal" data-keyboard="false" data-backdrop="static">
-                <div class="modal-dialog modal=sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">
-                                &times;
-                            </button>
-                            <h4>Session Expired</h4>
-                        </div>
-                        <div class="modal-body">
-                            <h2>Close this to login again</h2>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn btn-success">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="divError" class="alert alert-danger collapse">
-                <a href="#" id="linkClose" class="close">&times;</a>
-                <div id="divErrorText"></div>
-            </div>
-     </div>
+      </div>
+      <div id="divError" class="alert alert-danger collapse">
+        <a href="#" id="linkClose" class="close">&times;</a>
+        <div id="divErrorText"></div>
+      </div>
+    </div>
 
     <script src="Scripts/jquery-3.3.1.min.js"></script>
+    <script src="Scripts/jquery.cookie.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
     <script>
         $(document).ready(() => {
 
-            if (sessionStorage.getItem('token') == null) { // if user doesn't login
-                window.location.href = 'Login.html';
+            if ($.cookie("token") == null) { // if user doesn't login
+                window.location.href = "Login.html";
             }
 
-            $('#errorModal').on('hidden.bs.modal', function () {
-                window.location.href = 'Login.html';
+            $('#btnLogOff').on('click', () => {
+                $.cookie('token', null);
+                window.location.href = "Login.html";
             });
 
-            $("#btnLoadBooks").on('click', () => {
+            $("#errorModal").on("hidden.bs.modal", function() {
+              window.location.href = "Login.html";
+            });
+
+            $("#btnLoadBooks").on("click", () => {
+
                 $.ajax({
-                    url: '/api/books',
-                    method: 'GET',
-                    contentType: 'application/json',
+                    url: "/api/books",
+                    method: "GET",
+                    contentType: "application/json",
                     headers: {
-                        'Authorization': 'Bearer ' + sessionStorage.getItem('token') // set token in header
+                        Authorization: "Bearer " + $.cookie('token') // set token in header
                     },
-                    success: function (data) {
-                        $('#divData').removeClass('hidden');
-                        $('#tblBody').empty();
+                    success: function(data) {
+                        $("#divData").removeClass("hidden");
+                        $("#tblBody").empty();
                         $.each(data, (index, value) => { // display data in table
-                            var row = $('<tr><td>' + value.id + '</td><td>' + value.title + '</td><td>' + value.price + '$</td></tr>');
-                            $('#tbData').append(row);
-                        });
+                            var row = $(
+                                "<tr><td>" + value.id + "</td><td>" + value.title + "</td><td>" + value.price + "$</td></tr>"
+                            );
+                            $("#tbData").append(row);
+                        });  
                     },
-                    error: function (jqXHR) {
+                    error: function(jqXHR) {
                         if (jqXHR.status == "401") { // unauthorized
-                            $('#errorModal').modal('show');
+                            $("#errorModal").modal("show");
                         } else {
-                            $('#divErrorText').text(jqXHR.responseText);
-                            $('#divError').show('fade');
+                            $("#divErrorText").text(jqXHR.responseText);
+                            $("#divError").show("fade");
                         }
-                        
                     }
-                });
-
-
+                  });
             });
 
-            $('#linkClose').on('click', () => {
-                $('#divError').hide('fade');
+            $("#linkClose").on("click", () => {
+              $("#divError").hide("fade");
             });
-        });
+      });
     </script>
-</body>
+  </body>
 </html>
