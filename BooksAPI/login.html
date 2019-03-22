@@ -59,14 +59,12 @@
                         grant_type: 'password'
                     },
                     success: function (response) {
-                        //var date = new Date;
-                        //date.setDate(date.getDate() + 1);
-
-                        //document.cookie = "token=" + response.access_token + ";path=/;" + "expires=" + date.toUTCString();
-                        $.cookie("token", response.access_token, { expires : 1 });
-
-                        //localStorage.setItem('token', response.access_token);
+                        $.cookie("token", response.access_token, { expires: 1 });
+                        localStorage.setItem("userName", response.userName);
                         window.location.href = "data.html";
+
+                        //$('#divErrorText').text(JSON.stringify(response));
+                        //$('#divError').show('fade');
                     },
                     error: function (jqXHR) {
                         $('#divErrorText').text(jqXHR.responseText);

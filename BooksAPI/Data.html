@@ -10,6 +10,7 @@
     <div class="col-md-10 col-md-offset-1">
       <div class="well">
           <input type="button" name="button" value="Load Books" id="btnLoadBooks" class="btn btn-success" />
+          <span id="userName" class="text-muted"></span>
           <input type="button" name="button" value="Log out" id="btnLogOff" class="btn btn-success pull-right" />
       </div>
 
@@ -58,6 +59,8 @@
             if ($.cookie("token") == null) { // if user doesn't login
                 window.location.href = "Login.html";
             }
+
+            $('#userName').text('Hello, ' + localStorage.getItem('userName'));
 
             $('#btnLogOff').on('click', () => {
                 $.cookie('token', null);
